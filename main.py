@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-red_sprite = cv2.imread("sprite.png")
-red_sprite = cv2.cvtColor(red_sprite, cv2.COLOR_RGB2RGBA).copy()
+eye_glow_sprite = cv2.imread("eye_1.png")
+eye_glow_sprite = cv2.cvtColor(eye_glow_sprite, cv2.COLOR_RGB2RGBA).copy()
 
 def overlay_image_alpha(img, img_overlay, pos, alpha_mask):
     """Overlay img_overlay on top of img at the position specified by
@@ -62,10 +62,14 @@ def main():
             eyes = eye_cascade.detectMultiScale(roi_gray)
             for (ex, ey, ew, eh) in eyes:
                 cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+                dim = (ew, eh)
+                # resize image
+                eg_sprite_resized = cv2.resize(eye_glow_sprite, dim, interpolation=cv2.INTER_AREA)
                 overlay_image_alpha(img,
-                                    red_sprite[:, :, 0:3],
-                                    (ex, ey),
-                                    red_sprite[:, :, 3] / 255.0)
+                                    eg_sprite_resized[:, :, 0:3],
+                                    (x + ex, y + ey),
+                                    eg_sprite_resized[:, :, 3] / 127.0)
+                #img = cv2.addWeighted(img, 0.4, eg_sprite_resized, 0.1, 0)
 
 
 
