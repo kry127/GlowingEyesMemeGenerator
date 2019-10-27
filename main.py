@@ -2,6 +2,40 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
+red_sprite = cv2.imread("sprite.png")
+red_sprite = cv2.cvtColor(red_sprite, cv2.COLOR_RGB2RGBA).copy()
+
+def overlay_image_alpha(img, img_overlay, pos, alpha_mask):
+    """Overlay img_overlay on top of img at the position specified by
+    pos and blend using alpha_mask.
+
+    Alpha mask must contain values within the range [0, 1] and be the
+    same size as img_overlay.
+    """
+
+    x, y = pos
+
+    # Image ranges
+    y1, y2 = max(0, y), min(img.shape[0], y + img_overlay.shape[0])
+    x1, x2 = max(0, x), min(img.shape[1], x + img_overlay.shape[1])
+
+    # Overlay ranges
+    y1o, y2o = max(0, -y), min(img_overlay.shape[0], img.shape[0] - y)
+    x1o, x2o = max(0, -x), min(img_overlay.shape[1], img.shape[1] - x)
+
+    # Exit if nothing to do
+    if y1 >= y2 or x1 >= x2 or y1o >= y2o or x1o >= x2o:
+        return
+
+    channels = img.shape[2]
+
+    alpha = alpha_mask[y1o:y2o, x1o:x2o]
+    alpha_inv = 1.0 - alpha
+
+    for c in range(channels):
+        img[y1:y2, x1:x2, c] = (alpha * img_overlay[y1o:y2o, x1o:x2o, c] +
+                                alpha_inv * img[y1:y2, x1:x2, c])
+
 def main():
     #img = cv2.imread('sample.jpg',cv2.IMREAD_GRAYSCALE)
     #cv2.imshow('image',img)
@@ -18,7 +52,7 @@ def main():
     while 1:
         ret, img = cap.read()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, 1.1, 3)
+        faces = face_cascade.detectMultiScale(gray, 1.2, 3)
 
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -28,6 +62,12 @@ def main():
             eyes = eye_cascade.detectMultiScale(roi_gray)
             for (ex, ey, ew, eh) in eyes:
                 cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+                overlay_image_alpha(img,
+                                    red_sprite[:, :, 0:3],
+                                    (ex, ey),
+                                    red_sprite[:, :, 3] / 255.0)
+
+
 
         cv2.imshow('img', img)
         k = cv2.waitKey(30) & 0xff
