@@ -42,7 +42,7 @@ def main():
                 im_pil = Image.fromarray(img)
                 # paste red eyes
                 eg_w, eg_h = pil_eyeglow.size
-                dim = (x+ex-int(eg_w/2), y+ey-int(eg_h/2))
+                dim = (x+ex+int((ew - eg_w)/2), y+ey+int((eh-eg_h)/2))
                 im_pil.paste(pil_eyeglow, dim, pil_eyeglow)
                 # move PIL -> OpenCV
                 img = np.asarray(im_pil)
