@@ -5,6 +5,9 @@ https://stackoverflow.com/questions/14063070/overlay-a-smaller-image-on-a-larger
 Eye detection:
 https://www.hackster.io/trivediswap25/face-and-eye-detection-in-python-using-opencv-5a5b10
 
+Haar Cascades:
+https://github.com/opencv/opencv/tree/master/data/haarcascades
+
 #Machine Learning
 
 ## Datasets
