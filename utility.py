@@ -17,7 +17,7 @@ def pil_to_opencv(im_pil):
     return np.asarray(im_pil)
 
 
-
+# https://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil
 def rgb_to_hsv(rgb):
     # Translated from source of colorsys.rgb_to_hsv
     # r,g,b should be a numpy arrays with values between 0 and 255
@@ -65,6 +65,13 @@ def hsv_to_rgb(hsv):
 
 
 def shift_hue(arr,hout):
+    hsv=rgb_to_hsv(arr)
+    hsv[...,0]=hout
+    rgb=hsv_to_rgb(hsv)
+    return rgb
+
+
+def amplify_saturation(arr,hout):
     hsv=rgb_to_hsv(arr)
     hsv[...,0]=hout
     rgb=hsv_to_rgb(hsv)
