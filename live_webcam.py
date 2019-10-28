@@ -7,9 +7,10 @@ from utility import EyeglowMemeConverter, pil_to_opencv
 
 options = {
     "random_hue": False,
+    "show_eyes": False,
     "show_face": True,
     "eyeglow_path": "eye_1.png",
-    "faceglow_path": "face_1.png",
+    "faceglow_path": "face_2.png",
     "haar_scale_parameter": 1.4,
 }
 

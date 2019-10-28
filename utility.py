@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 # https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -92,8 +92,8 @@ class EyeglowMemeConverter:
             self.parameters = default_glowing_parameters
         else:
             self.parameters=parameters
-        self.pil_eyeglow = Image.open("eye_1.png")
-        self.pil_faceglow = Image.open("face_1.png")
+        self.pil_eyeglow = Image.open(self.parameters["eyeglow_path"])
+        self.pil_faceglow = Image.open(self.parameters["faceglow_path"])
         self.opencv_eyeglow = pil_to_opencv(self.pil_eyeglow)
         self.opencv_faceglow = pil_to_opencv(self.pil_faceglow)
         self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.1)
@@ -107,15 +107,23 @@ class EyeglowMemeConverter:
         gray = cv2.cvtColor(img_opencv, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray, self.haar_scale_parameter, 3)
 
+        iDraw = ImageDraw.Draw(img_pil)
+
         for (x, y, w, h) in faces:
             #cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            iDraw.rectangle([(x, y), (x + w, y + h)], None, outline=(0, 64, 255))
+
             roi_gray = gray[y:y + int(h/2), x:x + w]
 
             if self.parameters.get("show_face", False):
-                face_resized = self.pil_faceglow.resize((10*w, 10*h))
+                # https://www.geeksforgeeks.org/python-pil-image-resize-method/
+                face_resized = self.pil_faceglow.resize((w, h))
                 fg_w, fg_h = face_resized.size
                 dim = (x + int((w - fg_w) / 2), y + int((h - fg_h) / 2))
                 img_pil.paste(face_resized, dim, face_resized)
+
+            if not self.parameters.get("show_eyes", False):
+                continue # skip eye detection
 
             img_pil_eyeglow = self.pil_eyeglow
             if self.parameters.get("random_hue", False):
