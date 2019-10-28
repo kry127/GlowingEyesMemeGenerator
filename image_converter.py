@@ -4,18 +4,24 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 
-from utility import add_glow_ipil
+from utility import EyeglowMemeConverter
 
-input_path = "face2.jpg"
+input_path = "face.jpg"
 output_path = "khalanskiy.png"
+
 options = {
-    "random_hue": True
+    "random_hue": False,
+    "eyeglow_path": "eye_1.png",
+    "faceglow_path": "face_1.png",
+    "haar_scale_parameter": 1.4,
 }
 
 def main():
+    eyeglow_converter = EyeglowMemeConverter(parameters=options)
+
     original = Image.open(input_path)
     #find and substitude all eyes
-    add_glow_ipil(original, parameters=options)
+    eyeglow_converter.add_glow_ipil(original)
     original.save(output_path)
 
 

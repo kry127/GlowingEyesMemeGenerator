@@ -7,9 +7,6 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 # https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_eye.xml
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
-pil_eyeglow = Image.open("eye_1.png")
-pil_faceglow = Image.open("face_1.png")
-
 def opencv_to_pil(img):
     # move PIL -> OpenCV
     #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -19,54 +16,6 @@ def opencv_to_pil(img):
 def pil_to_opencv(im_pil):
     return np.asarray(im_pil)
 
-
-opencv_eyeglow = pil_to_opencv(pil_eyeglow)
-opencv_faceglow = pil_to_opencv(pil_faceglow)
-
-
-def randomize_hue_eyeglow():
-    hue = np.random.randint(0, 360)/360.0
-    new_img = Image.fromarray(shift_hue(opencv_eyeglow, hue), 'RGBA')
-    return new_img
-
-def add_glow(img_opencv, img_pil, parameters=None):
-    gray = cv2.cvtColor(img_opencv, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.2, 3)
-
-    for (x, y, w, h) in faces:
-        #cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        roi_gray = gray[y:y + int(h/2), x:x + w]
-
-        img_pil_eyeglow = pil_eyeglow
-        if parameters.get("random_hue", False):
-            img_pil_eyeglow = randomize_hue_eyeglow()
-        eyes = eye_cascade.detectMultiScale(roi_gray)
-        for (ex, ey, ew, eh) in eyes:
-            # info about conversions:
-            # https://stackoverflow.com/questions/43232813/convert-opencv-image-format-to-pil-image-format/48602446
-            # paste red eyes
-            eg_w, eg_h = img_pil_eyeglow.size
-            dim = (x + ex + int((ew - eg_w) / 2), y + ey + int((eh - eg_h) / 2))
-            img_pil.paste(img_pil_eyeglow, dim, img_pil_eyeglow)
-
-    return img_pil
-
-default_glowing_parameters = {
-    "random_hue": True
-}
-
-def add_glow_iopencv(img_opencv, parameters=None):
-    if parameters is None:
-        parameters = default_glowing_parameters
-    im_pil = opencv_to_pil(img_opencv)
-    return add_glow(img_opencv, im_pil, parameters=parameters)
-
-
-def add_glow_ipil(im_pil, parameters=None):
-    if parameters is None:
-        parameters = default_glowing_parameters
-    img_opencv = pil_to_opencv(im_pil)
-    return add_glow(img_opencv, im_pil, parameters=parameters)
 
 
 def rgb_to_hsv(rgb):
@@ -121,15 +70,59 @@ def shift_hue(arr,hout):
     rgb=hsv_to_rgb(hsv)
     return rgb
 
-def hue_example():
-    img = Image.open('tweeter.png').convert('RGBA')
-    arr = np.array(img)
 
-    green_hue = (180-78)/360.0
-    red_hue = (180-180)/360.0
 
-    new_img = Image.fromarray(shift_hue(arr,red_hue), 'RGBA')
-    new_img.save('tweeter_red.png')
+default_glowing_parameters = {
+    "random_hue": True,
+    "eyeglow_path": "eye_1.png",
+    "faceglow_path": "face_1.png",
+    "haar_scale_parameter": 1.1,
+}
 
-    new_img = Image.fromarray(shift_hue(arr,green_hue), 'RGBA')
-    new_img.save('tweeter_green.png')
+class EyeglowMemeConverter:
+    def __init__(self, parameters=None):
+        if parameters is None:
+            self.parameters = default_glowing_parameters
+        else:
+            self.parameters=parameters
+        self.pil_eyeglow = Image.open("eye_1.png")
+        self.pil_faceglow = Image.open("face_1.png")
+        self.opencv_eyeglow = pil_to_opencv(self.pil_eyeglow)
+        self.opencv_faceglow = pil_to_opencv(self.pil_faceglow)
+        self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.1)
+
+    def randomize_hue_eyeglow(self):
+        hue = np.random.randint(0, 360)/360.0
+        new_img = Image.fromarray(shift_hue(self.opencv_eyeglow, hue), 'RGBA')
+        return new_img
+
+    def add_glow(self, img_opencv, img_pil):
+        gray = cv2.cvtColor(img_opencv, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, self.haar_scale_parameter, 3)
+
+        for (x, y, w, h) in faces:
+            #cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            roi_gray = gray[y:y + int(h/2), x:x + w]
+
+            img_pil_eyeglow = self.pil_eyeglow
+            if self.parameters.get("random_hue", False):
+                img_pil_eyeglow = self.randomize_hue_eyeglow()
+            eyes = eye_cascade.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:
+                # info about conversions:
+                # https://stackoverflow.com/questions/43232813/convert-opencv-image-format-to-pil-image-format/48602446
+                # paste red eyes
+                eg_w, eg_h = img_pil_eyeglow.size
+                dim = (x + ex + int((ew - eg_w) / 2), y + ey + int((eh - eg_h) / 2))
+                img_pil.paste(img_pil_eyeglow, dim, img_pil_eyeglow)
+
+        return img_pil
+
+    def add_glow_iopencv(self, img_opencv):
+        im_pil = opencv_to_pil(img_opencv)
+        return self.add_glow(img_opencv, im_pil)
+
+
+    def add_glow_ipil(self, im_pil):
+        img_opencv = pil_to_opencv(im_pil)
+        return self.add_glow(img_opencv, im_pil)

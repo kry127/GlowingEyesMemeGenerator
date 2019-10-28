@@ -3,22 +3,23 @@ import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
 
-from utility import pil_to_opencv, add_glow_iopencv
+from utility import EyeglowMemeConverter, pil_to_opencv
 
 options = {
-    "random_hue": False
+    "random_hue": False,
+    "eyeglow_path": "eye_1.png",
+    "faceglow_path": "face_1.png",
 }
 
 def main():
 
     cap = cv2.VideoCapture(0)
-
-    #return
+    eyeglow_converter = EyeglowMemeConverter(parameters=options)
 
     while 1:
         ret, img = cap.read()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        im_pil = add_glow_iopencv(img, parameters=options)
+        im_pil = eyeglow_converter.add_glow_iopencv(img)
         img = pil_to_opencv(im_pil)
 
 
