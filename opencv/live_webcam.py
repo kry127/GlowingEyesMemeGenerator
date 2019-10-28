@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from PIL import Image
 
-from utility import EyeglowMemeConverter, pil_to_opencv
+from opencv.utility import EyeglowMemeConverter, pil_to_opencv
 
 options = {
     "random_hue": False,

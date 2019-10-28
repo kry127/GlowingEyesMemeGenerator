@@ -80,10 +80,12 @@ def amplify_saturation(arr,hout):
 
 
 default_glowing_parameters = {
-    "random_hue": True,
+    "random_hue": False,
+    "show_eyes": True,
+    "show_face": False,
     "eyeglow_path": "eye_1.png",
     "faceglow_path": "face_1.png",
-    "haar_scale_parameter": 1.1,
+    "haar_scale_parameter": 1.4,
 }
 
 class EyeglowMemeConverter:
@@ -91,7 +93,7 @@ class EyeglowMemeConverter:
         if parameters is None:
             self.parameters = default_glowing_parameters
         else:
-            self.parameters=parameters
+            self.parameters={**parameters, **default_glowing_parameters}
         self.pil_eyeglow = Image.open(self.parameters["eyeglow_path"])
         self.pil_faceglow = Image.open(self.parameters["faceglow_path"])
         self.opencv_eyeglow = pil_to_opencv(self.pil_eyeglow)

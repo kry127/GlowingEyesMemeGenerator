@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 
-from utility import EyeglowMemeConverter, shift_hue, pil_to_opencv
+from opencv.utility import EyeglowMemeConverter, shift_hue, pil_to_opencv
 
 input_path = "face.jpg"
 output_path = "khalanskiy.png"
