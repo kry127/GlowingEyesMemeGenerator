@@ -13,7 +13,16 @@
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Submit New Post</button>
+    <!--<div>
+        <input type="color" id="sparkle_color" name="sparkle_color"
+               value="#e66465">
+        <label for="head">Head</label>
+    </div>-->
+    <p>Hue:</p>
+    <input type="range" name="sparkle_hue" min="0" max="360" value="180" />
+
+    <input type="checkbox" name="randomize_color" /> Randomize color
+  <button type="submit">Добавить светящиеся глаза</button>
 </form>
 
 <img src="{% static 'images/sample.jpg' %}"  alt="Error"/>

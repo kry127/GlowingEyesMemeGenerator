@@ -13,4 +13,4 @@ def convert_image(input_file, output_file, options):
     original = Image.open(input_file)
     #find and substitude all eyes
     eyeglow_converter.add_glow_ipil(original)
-    output_file.save(output_file)
+    original.save(output_file)

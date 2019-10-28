@@ -1,6 +1,7 @@
 # posts/views.py
 import os
 
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView # new
 from django.urls import reverse_lazy # new
@@ -30,15 +31,37 @@ class CreatePostView(CreateView): # new
         file_path = self.object.cover.path
         file_id = self.object.id
         file_dir = os.path.dirname(file_path)
-        newfile_path = os.path.join(file_dir, f"tmpimg{file_id}.png")
+        newfile_name = f"tmpimg{file_id}.png"
+        newfile_path = os.path.join(file_dir, newfile_name)
 
         eyeglow_path = finders.find('images/eye_1.png')
         faceglow_path = finders.find('images/face_1.png')
+        eye_cascade_path = finders.find('xml/haarcascade_eye.xml')
+        face_cascade_path = finders.find('xml/haarcascade_frontalface_default.xml')
 
-        convert_image(file_path, newfile_path, options={"eyeglow_path": eyeglow_path, "faceglow_path": faceglow_path})
+
+        sparkle_hue = int(self.request.POST.get('sparkle_hue', 0))
+        randomize_color = self.request.POST.get('randomize_color', False)
+        if randomize_color:
+            randomize_color = True
+
+
+        convert_image(file_path, newfile_path,
+                        options={"eyeglow_path": eyeglow_path,
+                                 "faceglow_path": faceglow_path,
+                                 "eye_cascade": eye_cascade_path,
+                                 "face_cascade": face_cascade_path,
+                                 "sparkle_color": sparkle_hue,
+                                 "random_hue": randomize_color})
+
+        url_base = os.path.dirname(self.object.cover.url)
+        processed_image_url = f"{url_base}/{newfile_name}"
 
         # we can render something different here
-        return response
+        context={}
+        context['processed_image_url'] = processed_image_url
+
+        return render(self.request, 'posts/img_ready.html', context=context)
 
 
 @csrf_exempt

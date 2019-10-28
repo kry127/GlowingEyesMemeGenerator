@@ -1,15 +1,9 @@
 import cv2
 import numpy as np
-from PIL import Image, ImageDraw
-
-# https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-# https://github.com/Itseez/opencv/blob/master/data/haarcascades/haarcascade_eye.xml
-eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+from PIL import Image
 
 def opencv_to_pil(img):
     # move PIL -> OpenCV
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     im_pil = Image.fromarray(img)
     return im_pil
 
@@ -93,11 +87,14 @@ class EyeglowMemeConverter:
         if parameters is None:
             self.parameters = default_glowing_parameters
         else:
-            self.parameters={**parameters, **default_glowing_parameters}
+            self.parameters={**default_glowing_parameters, **parameters}
         self.pil_eyeglow = Image.open(self.parameters["eyeglow_path"])
         self.pil_faceglow = Image.open(self.parameters["faceglow_path"])
         self.opencv_eyeglow = pil_to_opencv(self.pil_eyeglow)
         self.opencv_faceglow = pil_to_opencv(self.pil_faceglow)
+        self.face_cascade = cv2.CascadeClassifier(self.parameters["face_cascade"])
+        self.eye_cascade = cv2.CascadeClassifier(self.parameters["eye_cascade"])
+        self.sparkle_hue = self.parameters.get("sparkle_hue", None)
         self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.1)
 
     def randomize_hue_eyeglow(self):
@@ -105,16 +102,18 @@ class EyeglowMemeConverter:
         new_img = Image.fromarray(shift_hue(self.opencv_eyeglow, hue), 'RGBA')
         return new_img
 
+    def colorize_hue_eyeglow(self):
+        if not self.sparkle_hue:
+            return self.pil_eyeglow
+        new_img = Image.fromarray(shift_hue(self.opencv_eyeglow, self.sparkle_hue), 'RGBA')
+        return new_img
+
+
     def add_glow(self, img_opencv, img_pil):
         gray = cv2.cvtColor(img_opencv, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, self.haar_scale_parameter, 3)
-
-        iDraw = ImageDraw.Draw(img_pil)
+        faces = self.face_cascade.detectMultiScale(gray, self.haar_scale_parameter, 3)
 
         for (x, y, w, h) in faces:
-            #cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            iDraw.rectangle([(x, y), (x + w, y + h)], None, outline=(0, 64, 255))
-
             roi_gray = gray[y:y + int(h/2), x:x + w]
 
             if self.parameters.get("show_face", False):
@@ -128,9 +127,11 @@ class EyeglowMemeConverter:
                 continue # skip eye detection
 
             img_pil_eyeglow = self.pil_eyeglow
+            if not self.sparkle_hue:
+                img_pil_eyeglow = self.colorize_hue_eyeglow()
             if self.parameters.get("random_hue", False):
                 img_pil_eyeglow = self.randomize_hue_eyeglow()
-            eyes = eye_cascade.detectMultiScale(roi_gray)
+            eyes = self.eye_cascade.detectMultiScale(roi_gray)
             for (ex, ey, ew, eh) in eyes:
                 # info about conversions:
                 # https://stackoverflow.com/questions/43232813/convert-opencv-image-format-to-pil-image-format/48602446
