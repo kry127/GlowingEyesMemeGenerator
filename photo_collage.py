@@ -11,6 +11,7 @@ output_path = "khalanskiy.png"
 
 options = {
     "random_hue": False,
+    "show_face": False,
     "eyeglow_path": "eye_1.png",
     "faceglow_path": "face_1.png",
     "haar_scale_parameter": 1.4,

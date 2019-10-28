@@ -111,6 +111,12 @@ class EyeglowMemeConverter:
             #cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
             roi_gray = gray[y:y + int(h/2), x:x + w]
 
+            if self.parameters.get("show_face", False):
+                face_resized = self.pil_faceglow.resize((10*w, 10*h))
+                fg_w, fg_h = face_resized.size
+                dim = (x + int((w - fg_w) / 2), y + int((h - fg_h) / 2))
+                img_pil.paste(face_resized, dim, face_resized)
+
             img_pil_eyeglow = self.pil_eyeglow
             if self.parameters.get("random_hue", False):
                 img_pil_eyeglow = self.randomize_hue_eyeglow()
