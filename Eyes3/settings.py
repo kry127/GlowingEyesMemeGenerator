@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '$+yu#(dc0n8njl5cckcdqa_1($xyy=xum$7nvuwg*%-p^y#rp_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'glowingeyesmemes.rybin.org', 'gemg.rybin.org']
 
