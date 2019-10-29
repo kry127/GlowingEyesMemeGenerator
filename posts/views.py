@@ -27,7 +27,7 @@ class CreatePostView(CreateView): # new
     # https://stackoverflow.com/questions/20877455/how-to-use-context-with-class-in-createview-in-django
     def get_context_data(self, **kwargs):
         ctx = super(CreatePostView, self).get_context_data(**kwargs)
-        ctx['sparkle_images'] = [f"eye_{i}.png" for i in range(1, 9)]
+        ctx['sparkle_images'] = [f"eye_{i}.png" for i in range(1, 10)]
         return ctx
 
     def form_valid(self, form):
