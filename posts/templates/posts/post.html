@@ -36,22 +36,22 @@
     </div>
     <br />
     <div class="wrapper">
-        Or, <input type="button" name="uploaded_sparkle" value="upload your sparkle">
+      <p> <input type="button" name="uploaded_sparkle" value="upload your sparkle" class="button2"></p>
     </div>
 
     <p>Sparkle hue offset:</p>
     <input type="range" name="sparkle_hue" min="0" max="360" value="180" /><br />
 
     <div class="wrapper">
-        <input type="checkbox" name="randomize_color" /> Randomize color
-        <input type="checkbox" name="make_collage" /> Make collage
+        <p> <input type="checkbox" name="randomize_color" /> Randomize color
+         <input type="checkbox" name="make_collage" /> Make collage</p>
     </div>
     <div class="wrapper">
       <button type="submit" class="button">Add glowing eyes</button>
     </div>
 </form>
-
+<div class="wrapper">
 <img src="{% static 'images/sample.jpg' %}"  alt="Error"/>
-
+</div>
 </body>
 </html>
