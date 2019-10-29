@@ -7,7 +7,7 @@ from django.views.generic import ListView, CreateView # new
 from django.urls import reverse_lazy # new
 from django.contrib.staticfiles import finders
 
-from opencv.image_converter import convert_image
+from opencv.image_converter import convert_image, make_collage
 
 from .forms import PostForm # new
 from .models import Post
@@ -23,6 +23,12 @@ class CreatePostView(CreateView): # new
     form_class = PostForm
     template_name = 'posts/post.html'
     success_url = reverse_lazy('home')
+
+    # https://stackoverflow.com/questions/20877455/how-to-use-context-with-class-in-createview-in-django
+    def get_context_data(self, **kwargs):
+        ctx = super(CreatePostView, self).get_context_data(**kwargs)
+        ctx['sparkle_images'] = [f"eye_{i}.png" for i in range(1, 9)]
+        return ctx
 
     def form_valid(self, form):
         response = super(CreatePostView, self).form_valid(form)
@@ -44,15 +50,24 @@ class CreatePostView(CreateView): # new
         randomize_color = self.request.POST.get('randomize_color', False)
         if randomize_color:
             randomize_color = True
+        make_collage_flag = self.request.POST.get('make_collage', False)
+        if make_collage_flag:
+            make_collage_flag = True
 
+        if "sparkle_type" in self.request.POST:
+            eyeglow_path = os.path.join(os.path.dirname(eyeglow_path), self.request.POST["sparkle_type"])
 
-        convert_image(file_path, newfile_path,
-                        options={"eyeglow_path": eyeglow_path,
-                                 "faceglow_path": faceglow_path,
-                                 "eye_cascade": eye_cascade_path,
-                                 "face_cascade": face_cascade_path,
-                                 "sparkle_color": sparkle_hue,
-                                 "random_hue": randomize_color})
+        settings = {"eyeglow_path": eyeglow_path,
+                     "faceglow_path": faceglow_path,
+                     "eye_cascade": eye_cascade_path,
+                     "face_cascade": face_cascade_path,
+                     "sparkle_color": sparkle_hue,
+                     "random_hue": randomize_color}
+
+        if make_collage_flag:
+            make_collage(file_path, newfile_path, options=settings)
+        else:
+            convert_image(file_path, newfile_path, options=settings)
 
         url_base = os.path.dirname(self.object.cover.url)
         processed_image_url = f"{url_base}/{newfile_name}"

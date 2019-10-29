@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <link rel="stylesheet" href="{% static 'css/image_radio.css' %}">
 </head>
 <body>
 <h1>Make Red Eyes</h1>
@@ -18,10 +19,21 @@
                value="#e66465">
         <label for="head">Head</label>
     </div>-->
-    <p>Hue:</p>
-    <input type="range" name="sparkle_hue" min="0" max="360" value="180" />
+    <p>Pick your sparkle:</p>
+    {% for img in sparkle_images %}
+    <label>
+      <input type="radio" name="sparkle_type" value="{{ img }}" checked>
+      <img class="radio-button-image" src="static/images/{{ img }}">
+    </label>
+    {% endfor %}
+    <br />
+    Or, <input type="button" name="uploaded_sparkle" value="upload your sparkle">
+
+    <p>Sparkle hue offset:</p>
+    <input type="range" name="sparkle_hue" min="0" max="360" value="180" /><br />
 
     <input type="checkbox" name="randomize_color" /> Randomize color
+    <input type="checkbox" name="make_collage" /> Make collage
   <button type="submit">Добавить светящиеся глаза</button>
 </form>
 
