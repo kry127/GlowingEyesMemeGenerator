@@ -31,33 +31,45 @@ class CreatePostView(CreateView): # new
         return ctx
 
     def form_valid(self, form):
+        # check field validity
         response = super(CreatePostView, self).form_valid(form)
-        # do something with self.object
-        print(self.object)
-        file_path = self.object.cover.path
-        file_id = self.object.id
-        file_dir = os.path.dirname(file_path)
-        newfile_name = f"tmpimg{file_id}.png"
-        newfile_path = os.path.join(file_dir, newfile_name)
 
+        # get static files
         eyeglow_path = finders.find('images/eye_1.png')
         faceglow_path = finders.find('images/face_1.png')
         eye_cascade_path = finders.find('xml/haarcascade_eye.xml')
         face_cascade_path = finders.find('xml/haarcascade_frontalface_default.xml')
         font_path = finders.find('fonts/road_sign.otf')
 
+        if "sparkle_type" in self.request.POST:
+            eyeglow_path = os.path.join(os.path.dirname(eyeglow_path), self.request.POST["sparkle_type"])
+
+
+        # do something with self.object
+        file_id = self.object.id
+
+        # parse background file
+        file_path = self.object.cover.path
+        file_dir = os.path.dirname(file_path)
+        newfile_name = f"tmpimg{file_id}.png"
+        newfile_path = os.path.join(file_dir, newfile_name)
+
+        # get sparkle file
+        # if hasattr(self.object, "spark")
+        try:
+            eyeglow_path = self.object.spark.path
+        except ValueError:
+            pass
 
         sparkle_hue = int(self.request.POST.get('sparkle_hue', 0))
+        substitude_type = int(self.request.POST.get('substitude_type', 'eyes'))
+        resize_to_box = int(self.request.POST.get('resize_to_box', False))
         randomize_color = self.request.POST.get('randomize_color', False)
         if randomize_color:
             randomize_color = True
         make_collage_flag = self.request.POST.get('make_collage', False)
         if make_collage_flag:
             make_collage_flag = True
-
-        if "sparkle_type" in self.request.POST:
-            eyeglow_path = os.path.join(os.path.dirname(eyeglow_path), self.request.POST["sparkle_type"])
-
 
         meme_text = self.object.title
 
@@ -67,6 +79,7 @@ class CreatePostView(CreateView): # new
                      "face_cascade": face_cascade_path,
                      "sparkle_color": sparkle_hue,
                      "random_hue": randomize_color,
+                     "resize_to_box": resize_to_box,
                      "meme_text": meme_text,
                      "meme_font": font_path}
 

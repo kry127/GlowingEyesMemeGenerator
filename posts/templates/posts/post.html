@@ -29,18 +29,26 @@
         <p>Pick your sparkle:</p>
         {% for img in sparkle_images %}
         <label>
-          <input type="radio" name="sparkle_type" value="{{ img }}" checked>
+          <input class="radio-img" type="radio" name="sparkle_type" value="{{ img }}" checked>
           <img class="radio-button-image" src="static/images/{{ img }}">
         </label>
         {% endfor %}
     </div>
     <br />
     <div class="wrapper">
-      <p> <input type="button" name="uploaded_sparkle" value="upload your sparkle" class="button2"></p>
+        <label>
+            <input type="radio" name="substitude_type" value="eyes" selected>
+            Substitude eyes
+        </label>
+        <label>
+            <input type="radio" name="substitude_type" value="face" >
+            Substitude face
+        </label>
     </div>
-
-    <p>Sparkle hue offset:</p>
-    <input type="range" name="sparkle_hue" min="0" max="360" value="180" /><br />
+    <div class="wrapper">
+      <p> <input type="checkbox" name="resize_to_box" /> Resize to bounding box </p>
+      <p> Resize ratio: <input type="number" name="resize_ratio" min="0.01" max="7.5" step="0.01" value="1"/></p>
+    </div>
 
     <div class="wrapper">
         <p> <input type="checkbox" name="randomize_color" /> Randomize color

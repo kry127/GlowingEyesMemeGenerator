@@ -113,8 +113,8 @@ class EyeglowMemeConverter:
             self.parameters = default_glowing_parameters
         else:
             self.parameters={**default_glowing_parameters, **parameters}
-        self.pil_eyeglow = Image.open(self.parameters["eyeglow_path"])
-        self.pil_faceglow = Image.open(self.parameters["faceglow_path"])
+        self.pil_eyeglow = Image.open(self.parameters["eyeglow_path"]).convert("RGBA")
+        self.pil_faceglow = Image.open(self.parameters["faceglow_path"]).convert("RGBA")
         self.opencv_eyeglow = pil_to_opencv(self.pil_eyeglow)
         self.opencv_faceglow = pil_to_opencv(self.pil_faceglow)
         self.face_cascade = cv2.CascadeClassifier(self.parameters["face_cascade"])
@@ -123,6 +123,9 @@ class EyeglowMemeConverter:
         self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.1)
         self.meme_text = self.parameters.get("meme_text", "")
         self.meme_font = self.parameters.get("meme_font", "")
+
+        self.meme_text_height_offset = 40
+        self.meme_text_shade_repeat = 4
 
     def randomize_hue_eyeglow(self):
         hue = np.random.randint(0, 360)/360.0
@@ -204,7 +207,7 @@ class EyeglowMemeConverter:
             padding = max(th // 5, 2)
             o_height += th + padding
             k = u + 1
-            pos = ((img_w - tw) // 2, img_h - o_height + padding // 2)
+            pos = ((img_w - tw) // 2, img_h - o_height + padding // 2 - self.meme_text_height_offset)
             draw_shadowed_text(draw, pos, line, (255, 255, 255), font, padding)
             #draw.text(((img_w - tw) // 2, img_h - o_height + padding // 2), line, (0, 0, 0), font=font)
 

@@ -1,7 +1,7 @@
 /* https://stackoverflow.com/questions/17541614/use-images-instead-of-radio-buttons */
 
 /* HIDE RADIO */
-[type=radio] {
+.radio-img {
   position: absolute;
   opacity: 0;
   width: 0;
@@ -9,12 +9,12 @@
 }
 
 /* IMAGE STYLES */
-[type=radio] + img {
+.radio-img + img {
   cursor: pointer;
 }
 
 /* CHECKED STYLES */
-[type=radio]:checked + img {
+.radio-img:checked + img {
   outline: 2px solid #60e2b4;
 }
 
