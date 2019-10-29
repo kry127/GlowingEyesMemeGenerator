@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
-from PIL import Image
-
+from PIL import Image, ImageFont, ImageDraw
 
 from opencv.utility import EyeglowMemeConverter, pil_to_opencv, shift_hue
 

@@ -44,6 +44,7 @@ class CreatePostView(CreateView): # new
         faceglow_path = finders.find('images/face_1.png')
         eye_cascade_path = finders.find('xml/haarcascade_eye.xml')
         face_cascade_path = finders.find('xml/haarcascade_frontalface_default.xml')
+        font_path = finders.find('fonts/road_sign.otf')
 
 
         sparkle_hue = int(self.request.POST.get('sparkle_hue', 0))
@@ -57,12 +58,17 @@ class CreatePostView(CreateView): # new
         if "sparkle_type" in self.request.POST:
             eyeglow_path = os.path.join(os.path.dirname(eyeglow_path), self.request.POST["sparkle_type"])
 
+
+        meme_text = self.object.title
+
         settings = {"eyeglow_path": eyeglow_path,
                      "faceglow_path": faceglow_path,
                      "eye_cascade": eye_cascade_path,
                      "face_cascade": face_cascade_path,
                      "sparkle_color": sparkle_hue,
-                     "random_hue": randomize_color}
+                     "random_hue": randomize_color,
+                     "meme_text": meme_text,
+                     "meme_font": font_path}
 
         if make_collage_flag:
             make_collage(file_path, newfile_path, options=settings)

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
+
 
 def opencv_to_pil(img):
     # move PIL -> OpenCV
@@ -71,7 +72,31 @@ def amplify_saturation(arr,hout):
     rgb=hsv_to_rgb(hsv)
     return rgb
 
+# create outline text
+# https://stackoverflow.com/questions/41556771/is-there-a-way-to-outline-text-with-a-dark-line-in-pil
+def draw_shadowed_text(draw, xy, text, textColor, font, adj, shadowColor = (0, 0, 0)):
+    outline_amount = 3
+    x, y = xy
+    for adj in range(outline_amount):
+        #move right
+        draw.text((x-adj, y), text, font=font, fill=shadowColor)
+        #move left
+        draw.text((x+adj, y), text, font=font, fill=shadowColor)
+        #move up
+        draw.text((x, y+adj), text, font=font, fill=shadowColor)
+        #move down
+        draw.text((x, y-adj), text, font=font, fill=shadowColor)
+        #diagnal left up
+        draw.text((x-adj, y+adj), text, font=font, fill=shadowColor)
+        #diagnal right up
+        draw.text((x+adj, y+adj), text, font=font, fill=shadowColor)
+        #diagnal left down
+        draw.text((x-adj, y-adj), text, font=font, fill=shadowColor)
+        #diagnal right down
+        draw.text((x+adj, y-adj), text, font=font, fill=shadowColor)
 
+        #create normal text on image
+        draw.text((x,y), text, font=font, fill=textColor)
 
 default_glowing_parameters = {
     "random_hue": False,
@@ -96,6 +121,8 @@ class EyeglowMemeConverter:
         self.eye_cascade = cv2.CascadeClassifier(self.parameters["eye_cascade"])
         self.sparkle_hue = self.parameters.get("sparkle_hue", None)
         self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.1)
+        self.meme_text = self.parameters.get("meme_text", "")
+        self.meme_font = self.parameters.get("meme_font", "")
 
     def randomize_hue_eyeglow(self):
         hue = np.random.randint(0, 360)/360.0
@@ -107,7 +134,6 @@ class EyeglowMemeConverter:
             return self.pil_eyeglow
         new_img = Image.fromarray(shift_hue(self.opencv_eyeglow, self.sparkle_hue), 'RGBA')
         return new_img
-
 
     def add_glow(self, img_opencv, img_pil):
         gray = cv2.cvtColor(img_opencv, cv2.COLOR_BGR2GRAY)
@@ -140,6 +166,7 @@ class EyeglowMemeConverter:
                 dim = (x + ex + int((ew - eg_w) / 2), y + ey + int((eh - eg_h) / 2))
                 img_pil.paste(img_pil_eyeglow, dim, img_pil_eyeglow)
 
+        img_pil = self.add_meme_text(img_pil)
         return img_pil
 
     def add_glow_iopencv(self, img_opencv):
@@ -150,3 +177,35 @@ class EyeglowMemeConverter:
     def add_glow_ipil(self, im_pil):
         img_opencv = pil_to_opencv(im_pil)
         return self.add_glow(img_opencv, im_pil)
+
+    def add_meme_text(self, img_pil):
+        text = self.meme_text
+        img_w, img_h = img_pil.size
+        effective_width = img_w*0.90
+        font = ImageFont.truetype(self.meme_font, 24)
+        draw = ImageDraw.Draw(img_pil)
+        splitted_text = []
+        accum = ""
+        for word in text.split():
+            tmp_txt = accum + word
+            tw, th = font.getsize(tmp_txt)
+            if tw > effective_width:
+                splitted_text.append(accum)
+                accum = word
+            else:
+                accum = tmp_txt
+        splitted_text.append(accum)
+
+        #print line by line splitted text
+        o_height = 0
+        for u in reversed(range(len(splitted_text))):
+            line = splitted_text[u]
+            tw, th = font.getsize(line)
+            padding = max(th // 5, 2)
+            o_height += th + padding
+            k = u + 1
+            pos = ((img_w - tw) // 2, img_h - o_height + padding // 2)
+            draw_shadowed_text(draw, pos, line, (255, 255, 255), font, padding)
+            #draw.text(((img_w - tw) // 2, img_h - o_height + padding // 2), line, (0, 0, 0), font=font)
+
+        return img_pil
