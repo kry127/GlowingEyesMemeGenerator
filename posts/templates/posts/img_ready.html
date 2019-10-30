@@ -3,25 +3,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Glowing Eyes Meme Generator</title>
+    <title>GEMG</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/blog.css' %}">
     <link rel="stylesheet" href="{% static 'css/glowing.css' %}">
 </head>
 <body>
 
 <div class="page-header">
-    <h1><a href="/">Your image is ready:</a></h1>
+    <h1><a href="/">Your image is ready!</a></h1>
 </div>
  <div class="wrapper">
 
-<img src="{{ processed_image_url }}"  alt="User image"/> <br />
+<img class="out-picture" src="{{ processed_image_url }}"  alt="User image"  width="50%" height="50%" /> <br />
      <p>    </p>
      <p>    </p>
   <div>
 <a href="{{ processed_image_url }}" class="button2">Скачать картинку</a>
     </div>
+     <p>    </p>
 </div>
 </body>
 </html>

@@ -14,7 +14,7 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'cover', 'spark']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'input'}),
-            'cover': forms.FileInput(attrs={'class': 'my_input'}),
-            'spark': forms.FileInput(attrs={'class': 'my_input'})
+            'title': forms.TextInput(attrs={'class': 'form-control', 'type': 'text', 'placeholder':'Enter a meme text!'}),
+            'cover': forms.FileInput(attrs={'type': 'file', 'class': 'custom-file-input', 'id': 'inputGroupFile04','aria-describedby':'inputGroupFileAddon04'}),
+            'spark': forms.FileInput(attrs={'type': 'file', 'class': 'custom-file-input','id': 'inputGroupFile04','aria-describedby':'inputGroupFileAddon04'})
         }
