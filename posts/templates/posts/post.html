@@ -25,19 +25,10 @@
        </div>
     {% endfor %}
 
-    <div class="wrapper">
-        <p>Pick your sparkle:</p>
-        {% for img in sparkle_images %}
-        <label>
-          <input class="radio-img" type="radio" name="sparkle_type" value="{{ img }}" checked>
-          <img class="radio-button-image" src="static/images/{{ img }}">
-        </label>
-        {% endfor %}
-    </div>
-    <br />
+
     <div class="wrapper">
         <label>
-            <input type="radio" name="substitude_type" value="eyes" selected>
+            <input type="radio" name="substitude_type" value="eyes" checked>
             Substitude eyes
         </label>
         <label>
@@ -46,8 +37,19 @@
         </label>
     </div>
     <div class="wrapper">
+        <p>Pick your sparkle:</p>
+        {% for img in sparkle_images %}
+        <label>
+          <input class="radio-img" type="radio" name="sparkle_type" value="{{ img }}">
+          <img class="radio-button-image" src="static/images/{{ img }}">
+        </label>
+        {% endfor %}
+    </div>
+    <br />
+    <div class="wrapper">
+      <h4>Resizing options:</h4>
       <p> <input type="checkbox" name="resize_to_box" /> Resize to bounding box </p>
-      <p> Resize ratio: <input type="number" name="resize_ratio" min="0.01" max="7.5" step="0.01" value="1"/></p>
+      <p> Resize ratio: <input type="number" name="resize_ratio" min="0.01" max="15" step="0.01" value="1"/></p>
     </div>
 
     <div class="wrapper">

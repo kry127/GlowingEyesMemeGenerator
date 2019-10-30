@@ -98,29 +98,25 @@ def draw_shadowed_text(draw, xy, text, textColor, font, adj, shadowColor = (0, 0
         #create normal text on image
         draw.text((x,y), text, font=font, fill=textColor)
 
-default_glowing_parameters = {
-    "random_hue": False,
-    "show_eyes": True,
-    "show_face": False,
-    "eyeglow_path": "eye_1.png",
-    "faceglow_path": "face_1.png",
-    "haar_scale_parameter": 1.4,
-}
-
 class EyeglowMemeConverter:
     def __init__(self, parameters=None):
         if parameters is None:
-            self.parameters = default_glowing_parameters
+            self.parameters = {}
         else:
-            self.parameters={**default_glowing_parameters, **parameters}
+            self.parameters = parameters
         self.pil_eyeglow = Image.open(self.parameters["eyeglow_path"]).convert("RGBA")
         self.pil_faceglow = Image.open(self.parameters["faceglow_path"]).convert("RGBA")
         self.opencv_eyeglow = pil_to_opencv(self.pil_eyeglow)
         self.opencv_faceglow = pil_to_opencv(self.pil_faceglow)
         self.face_cascade = cv2.CascadeClassifier(self.parameters["face_cascade"])
         self.eye_cascade = cv2.CascadeClassifier(self.parameters["eye_cascade"])
+        self.glasses_cascade_path = cv2.CascadeClassifier(self.parameters["glasses_cascade_path"])
         self.sparkle_hue = self.parameters.get("sparkle_hue", None)
         self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.1)
+        self.resize_to_box = self.parameters.get("resize_to_box", False)
+        self.substitude_eyes = self.parameters.get("substitude_eyes", True)
+        self.substitude_face = self.parameters.get("substitude_face", False)
+        self.resize_ratio = self.parameters.get("resize_ratio", 1.0)
         self.meme_text = self.parameters.get("meme_text", "")
         self.meme_font = self.parameters.get("meme_font", "")
 
@@ -145,29 +141,45 @@ class EyeglowMemeConverter:
         for (x, y, w, h) in faces:
             roi_gray = gray[y:y + int(h/2), x:x + w]
 
-            if self.parameters.get("show_face", False):
+            if self.substitude_face:
                 # https://www.geeksforgeeks.org/python-pil-image-resize-method/
-                face_resized = self.pil_faceglow.resize((w, h))
+                if self.resize_to_box:
+                    scale = self.resize_ratio
+                    face_resized = self.pil_faceglow.resize((int(w*scale), int(h*scale)))
+                else:
+                    face_resized = self.pil_faceglow
                 fg_w, fg_h = face_resized.size
                 dim = (x + int((w - fg_w) / 2), y + int((h - fg_h) / 2))
                 img_pil.paste(face_resized, dim, face_resized)
 
-            if not self.parameters.get("show_eyes", False):
+            if not self.substitude_eyes:
                 continue # skip eye detection
 
-            img_pil_eyeglow = self.pil_eyeglow
             if not self.sparkle_hue:
                 img_pil_eyeglow = self.colorize_hue_eyeglow()
             if self.parameters.get("random_hue", False):
                 img_pil_eyeglow = self.randomize_hue_eyeglow()
-            eyes = self.eye_cascade.detectMultiScale(roi_gray)
-            for (ex, ey, ew, eh) in eyes:
-                # info about conversions:
-                # https://stackoverflow.com/questions/43232813/convert-opencv-image-format-to-pil-image-format/48602446
+
+            def process_eye(ex, ey, ew, eh):
+                # resize to box if needed
+                if self.resize_to_box:
+                    scale = self.resize_ratio
+                    img_pil_eyeglow = self.pil_eyeglow.resize((int(ew*scale), int(eh*scale)))
+                else:
+                    img_pil_eyeglow = self.pil_eyeglow
                 # paste red eyes
                 eg_w, eg_h = img_pil_eyeglow.size
                 dim = (x + ex + int((ew - eg_w) / 2), y + ey + int((eh - eg_h) / 2))
                 img_pil.paste(img_pil_eyeglow, dim, img_pil_eyeglow)
+
+            # simple eye processing
+            eyes = self.eye_cascade.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:
+                process_eye(ex, ey, ew, eh)
+            # glassed eye processing
+            eyes = self.glasses_cascade_path.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:
+                process_eye(ex, ey, ew, eh)
 
         img_pil = self.add_meme_text(img_pil)
         return img_pil
@@ -208,7 +220,7 @@ class EyeglowMemeConverter:
             o_height += th + padding
             k = u + 1
             pos = ((img_w - tw) // 2, img_h - o_height + padding // 2 - self.meme_text_height_offset)
-            draw_shadowed_text(draw, pos, line, (255, 255, 255), font, padding)
+            draw_shadowed_text(draw, pos, line, (255, 255, 255), font, 2)
             #draw.text(((img_w - tw) // 2, img_h - o_height + padding // 2), line, (0, 0, 0), font=font)
 
         return img_pil
