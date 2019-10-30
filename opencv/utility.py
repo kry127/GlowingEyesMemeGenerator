@@ -112,7 +112,7 @@ class EyeglowMemeConverter:
         self.eye_cascade = cv2.CascadeClassifier(self.parameters["eye_cascade"])
         self.glasses_cascade_path = cv2.CascadeClassifier(self.parameters["glasses_cascade_path"])
         self.sparkle_hue = self.parameters.get("sparkle_hue", None)
-        self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.1)
+        self.haar_scale_parameter = self.parameters.get("haar_scale_parameter", 1.5)
         self.resize_to_box = self.parameters.get("resize_to_box", False)
         self.substitude_eyes = self.parameters.get("substitude_eyes", True)
         self.substitude_face = self.parameters.get("substitude_face", False)
@@ -156,13 +156,16 @@ class EyeglowMemeConverter:
             if not self.substitude_eyes:
                 continue # skip eye detection
 
+            img_pil_eyeglow_colorized  = self.pil_eyeglow
             if not self.sparkle_hue:
                 img_pil_eyeglow_colorized = self.colorize_hue_eyeglow()
             if self.randomize_color:
                 img_pil_eyeglow_colorized = self.randomize_hue_eyeglow()
 
-            def process_eye(ex, ey, ew, eh):
-                # resize to box if needed
+
+            # simple eye processing
+            eyes = self.eye_cascade.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:# resize to box if needed
                 if self.resize_to_box:
                     scale = self.resize_ratio
                     img_pil_eyeglow = img_pil_eyeglow_colorized.resize((int(ew*scale), int(eh*scale)))
@@ -172,15 +175,6 @@ class EyeglowMemeConverter:
                 eg_w, eg_h = img_pil_eyeglow.size
                 dim = (x + ex + int((ew - eg_w) / 2), y + ey + int((eh - eg_h) / 2))
                 img_pil.paste(img_pil_eyeglow, dim, img_pil_eyeglow)
-
-            # simple eye processing
-            eyes = self.eye_cascade.detectMultiScale(roi_gray)
-            for (ex, ey, ew, eh) in eyes:
-                process_eye(ex, ey, ew, eh)
-            # glassed eye processing
-            eyes = self.glasses_cascade_path.detectMultiScale(roi_gray)
-            for (ex, ey, ew, eh) in eyes:
-                process_eye(ex, ey, ew, eh)
 
         img_pil = self.add_meme_text(img_pil)
         return img_pil
@@ -203,7 +197,7 @@ class EyeglowMemeConverter:
         splitted_text = []
         accum = ""
         for word in text.split():
-            tmp_txt = accum + word
+            tmp_txt = accum + " " + word
             tw, th = font.getsize(tmp_txt)
             if tw > effective_width:
                 splitted_text.append(accum)
