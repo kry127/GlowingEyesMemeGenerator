@@ -116,6 +116,7 @@ class EyeglowMemeConverter:
         self.resize_to_box = self.parameters.get("resize_to_box", False)
         self.substitude_eyes = self.parameters.get("substitude_eyes", True)
         self.substitude_face = self.parameters.get("substitude_face", False)
+        self.randomize_color = self.parameters.get("randomize_color", False)
         self.resize_ratio = self.parameters.get("resize_ratio", 1.0)
         self.meme_text = self.parameters.get("meme_text", "")
         self.meme_font = self.parameters.get("meme_font", "")
@@ -156,17 +157,17 @@ class EyeglowMemeConverter:
                 continue # skip eye detection
 
             if not self.sparkle_hue:
-                img_pil_eyeglow = self.colorize_hue_eyeglow()
-            if self.parameters.get("random_hue", False):
-                img_pil_eyeglow = self.randomize_hue_eyeglow()
+                img_pil_eyeglow_colorized = self.colorize_hue_eyeglow()
+            if self.randomize_color:
+                img_pil_eyeglow_colorized = self.randomize_hue_eyeglow()
 
             def process_eye(ex, ey, ew, eh):
                 # resize to box if needed
                 if self.resize_to_box:
                     scale = self.resize_ratio
-                    img_pil_eyeglow = self.pil_eyeglow.resize((int(ew*scale), int(eh*scale)))
+                    img_pil_eyeglow = img_pil_eyeglow_colorized.resize((int(ew*scale), int(eh*scale)))
                 else:
-                    img_pil_eyeglow = self.pil_eyeglow
+                    img_pil_eyeglow = img_pil_eyeglow_colorized
                 # paste red eyes
                 eg_w, eg_h = img_pil_eyeglow.size
                 dim = (x + ex + int((ew - eg_w) / 2), y + ey + int((eh - eg_h) / 2))

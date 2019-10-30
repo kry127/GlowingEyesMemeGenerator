@@ -92,7 +92,7 @@ class CreatePostView(CreateView): # new
                      "substitude_eyes": substitude_eyes,
                      "substitude_face": substitude_face,
                      "sparkle_color": sparkle_hue,
-                     "random_hue": randomize_color,
+                     "randomize_color": randomize_color,
                      "resize_to_box": resize_to_box,
                      "resize_ratio": resize_ratio,
                      "meme_text": meme_text,
