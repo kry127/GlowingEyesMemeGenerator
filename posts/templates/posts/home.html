@@ -1,0 +1,21 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+</head>
+<body>
+<h1>Result!</h1>
+<ul>
+  {% for post in object_list %}
+    <h2>{{ post.title }}</h2>
+    <img src="{{ post.cover.url}}" alt="{{ post.title }}">
+  {% endfor %}
+</ul>
+</body>
+</html>
+

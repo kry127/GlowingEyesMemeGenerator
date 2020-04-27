@@ -1,0 +1,25 @@
+/* https://stackoverflow.com/questions/17541614/use-images-instead-of-radio-buttons */
+
+/* HIDE RADIO */
+.radio-img {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+.radio-img + img {
+  cursor: pointer;
+}
+
+/* CHECKED STYLES */
+.radio-img:checked + img {
+  outline: 2px solid #60e2b4;
+}
+
+/* resize label image */
+.radio-button-image {
+    height: 64px;
+    width: 64px;
+}

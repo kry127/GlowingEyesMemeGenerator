@@ -1,0 +1,122 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GEMG</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <link rel="stylesheet" href="{% static 'css/image_radio.css' %}">
+    <link rel="stylesheet" href="{% static 'css/glowing.css' %}">
+</head>
+<body>
+
+ <div class="container">
+      <div class="container">
+       <div class="container">
+             <div class="container">
+                <div class="container">
+                    <div class="container">
+
+
+
+<div class="page-header">
+    <h1><a href="/">Glowing Eyes Meme Generator</a></h1>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+            {{form.title.title}}
+            {{form.title}}
+
+               <p> </p>
+<div class="input-group">
+            <div class="custom-file">
+            {{form.cover}}
+            <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+            </div>
+</div>
+            <p> </p>
+
+<div class="input-group">
+            <div class="custom-file">
+            {{form.spark}}
+            <label class="custom-file-label" for="inputGroupFile04">Choose spark</label>
+            </div>
+</div>
+            <p> </p>
+
+
+    <div class="wrapper">
+        <label>
+            <input type="radio" name="substitude_type" value="eyes" checked>
+            Substitude eyes
+        </label>
+        <label>
+            <input type="radio" name="substitude_type" value="face" >
+            Substitude face
+        </label>
+    </div>
+<div class="wrapper">
+        <p>Pick your sparkle:</p>
+</div>
+<div class="wrapper2">
+        {% for img in sparkle_images %}
+        <label>
+          <input class="radio-img" type="radio" name="sparkle_type" value="{{ img }}">
+          <img class="radio-button-image" src="static/images/{{ img }}">
+        </label>
+        {% endfor %}
+    </div>
+    <br />
+    <div class="wrapper">
+      <h4>Resizing options:</h4>
+      <p> <input type="checkbox" name="resize_to_box" /> Resize to bounding box </p>
+      <p> Resize ratio: <input type="number" name="resize_ratio" min="0.01" max="15" step="0.01" value="1"/></p>
+    </div>
+
+    <div class="wrapper">
+        <p> <input type="checkbox" name="randomize_color" /> Randomize color
+         <input type="checkbox" name="make_collage" id="checkbox_make_collage" onchange="change_sample()" /> Make collage</p>
+    </div>
+    <div class="wrapper">
+      <button type="submit" class="button">Add glowing eyes</button>
+    </div>
+</form>
+<div class="wrapper">
+<img class="sample" id="sample_1" src="{% static 'images/sample.jpg' %}"  alt="Glowing Eyes Meme Sample"/>
+</div>
+<div class="wrapper">
+<img class="sample" id="sample_2"  hidden src="{% static 'images/sample_collage.png' %}"  alt="Glowing Eyes Meme Sample Collage"/>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+ <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+ <!-- Script for switching examples -->
+ <script type="text/javascript">
+    function change_sample() {
+        sample_1 = document.getElementById("sample_1")
+        sample_2 = document.getElementById("sample_2")
+        ch_make_collage = document.getElementById("checkbox_make_collage")
+        if (ch_make_collage.checked) {
+            sample_1.hidden = true
+            sample_2.hidden = false
+        } else {
+            sample_1.hidden = false
+            sample_2.hidden = true
+        }
+    }
+ </script>
+</body>
+</html>

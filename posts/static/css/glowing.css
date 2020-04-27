@@ -1,0 +1,104 @@
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    color: #cc0000;
+    font-size: 41pt;
+    text-align: center;
+    background-repeat: no-repeat;
+    text-decoration: none;
+    font-family: Candara, serif;
+}
+
+
+.page-header2 h1, .page-header2 h1 a, .page-header2 h1 a:visited, .page-header2 h1 a:active {
+    color: #cc0000;
+    font-size: 41pt;
+    text-decoration: none;
+}
+
+
+.button {
+  background-color: #d61b1f;
+    border-radius: 15px;
+  border: none;
+  width: 300px;
+  height: 50px;
+  color: white;
+  line-height: 10px;
+  padding: 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+}
+
+
+.wrapper {
+    text-align: center;
+}
+
+
+.wrapper2 {
+    border-style: groove;
+    text-align: center;
+    padding: 3px;
+    border-color: rgba(163,41,13,0.25)
+}
+
+.wrapper3 {
+  min-height: 100%;
+   width: 100%;
+}
+
+
+
+.my_input {
+    text-align: center;
+    display: inline-block;
+    color: #dd8c06;
+}
+
+
+.button2 {
+  background-color: #9e1416;
+    border-radius: 10px;
+  border: none;
+  width: 150px;
+  height: 10px;
+  color: white;
+  line-height: 0px;
+  padding: 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.sample {
+    width: 90%;
+    margin-bottom: 40px;
+}
+
+.out-picture {
+    width: 50%;
+    height: 50%;
+}
+
+/*
+for upload file button
+https://stackoverflow.com/questions/27929363/how-can-you-style-djangos-file-picker-form-button
+*/
+.fileUpload {
+	position: relative;
+	overflow: hidden;
+	margin: 10px;
+}
+.fileUpload input.upload {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}

@@ -11,7 +11,7 @@ This project is devoted to glowing eyes meme generator. Example of image we woul
 
 Not all of the task may be achievable :)
 
-### Stack of tecknologies
+### Stack of technologies
 1. Python
 2. OpenCV
 3. Django
