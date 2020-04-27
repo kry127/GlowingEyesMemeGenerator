@@ -25,7 +25,16 @@ SECRET_KEY = '$+yu#(dc0n8njl5cckcdqa_1($xyy=xum$7nvuwg*%-p^y#rp_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'glowingeyesmemes.rybin.org', 'gemg.rybin.org']
+if os.path.isfile('allowed.hosts'):
+    allowed_hosts_path = 'allowed.hosts'
+else:
+    allowed_hosts_path = 'Eyes3/allowed.hosts'
+
+with open(allowed_hosts_path) as f:
+    allowed_hosts = f.readlines()
+allowed_hosts = [x.strip() for x in allowed_hosts]
+
+ALLOWED_HOSTS = allowed_hosts
 
 
 # Application definition
